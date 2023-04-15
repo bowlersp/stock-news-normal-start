@@ -1,8 +1,8 @@
 import requests
 import smtplib
 
-MY_EMAIL = "xxxx"
-MY_PASSWORD = "yyyyy"
+MY_EMAIL = "xxxxx"
+MY_PASSWORD = "yyyyyy"
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -46,8 +46,11 @@ print(f"The price of {STOCK_NAME} closed at a price of {day_before_yesterday_clo
 
 #TODO 3. - Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20. Hint: https://www.w3schools.com/python/ref_func_abs.asp
 
-difference = abs(float(yesterday_closing_price) - float(day_before_yesterday_closing_price))
-print(f"The positive difference between yesterday's and the day before yesterday's {STOCK_NAME} price was {difference}")
+difference = (float(yesterday_closing_price) - float(day_before_yesterday_closing_price))
+
+
+
+# print(f"The positive difference between yesterday's and the day before yesterday's {STOCK_NAME} price was {difference}")
 
 #TODO 4. - Work out the percentage difference in price between closing price yesterday and closing price the day before yesterday.
 
@@ -66,17 +69,17 @@ print(f"The percentage difference between yesterday's and the day before yesterd
 
 #TODO 6. - Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
 
-if percentage_difference > 0:
-    # print("Get News")
-    news_response = requests.get(NEWS_ENDPOINT, params=news_params)
-    news_response.raise_for_status()
-    news_data = news_response.json()["articles"]
+# if percentage_difference > 0:
+#     # print("Get News")
+news_response = requests.get(NEWS_ENDPOINT, params=news_params)
+news_response.raise_for_status()
+news_data = news_response.json()["articles"]
 
 
 #TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
 
-    three_articles = news_data[:3]
-    print(three_articles)
+three_articles = news_data[:3]
+print(three_articles)
 
 
     ## STEP 3: Use twilio.com/docs/sms/quickstart/python
@@ -84,16 +87,36 @@ if percentage_difference > 0:
 
 #TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
 
-    formatted_articles = [f"Headline: {article['title']}. \nBrief: {article['description']}" for article in three_articles]
-    print(formatted_articles)
+formatted_articles = []
+for article in three_articles:
+    article['description'] = article['description'].replace('“', '"').replace('“', '"') \
+        .replace('”', '"').replace('…', '...')
+    formatted_articles.append(f"Headline: {article['title']}. \nBrief: {article['description']}")
+print(formatted_articles)
+email_body = formatted_articles[0] + "\n\n"
+email_body += formatted_articles[1] + "\n\n"
+email_body += formatted_articles[2]
+email_body = email_body.replace(u'\xa0', u' ')
+
 #TODO 9. - Send each article as a separate message via Twilio.
+difference = (float(yesterday_closing_price) - float(day_before_yesterday_closing_price))
+if difference > 0:
     with smtplib.SMTP("smtp.mail.yahoo.com") as connection:
         connection.starttls()
         connection.login(MY_EMAIL, MY_PASSWORD)
         connection.sendmail(
             from_addr=MY_EMAIL,
             to_addrs=MY_EMAIL,
-            msg=f"Subject: Tesla News\n\n {formatted_articles}"
+            msg=f"Subject: Tesla Stock is Up {percentage_difference}! Sell it!\n\n {formatted_articles}"
+        )
+else:
+    with smtplib.SMTP("smtp.mail.yahoo.com") as connection:
+        connection.starttls()
+        connection.login(MY_EMAIL, MY_PASSWORD)
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs=MY_EMAIL,
+            msg=f"Subject: Tesla Stock is Fucking Down {percentage_difference}! Buy it!!!\n\n {formatted_articles}"
         )
 
 #Optional TODO: Format the message like this: 
