@@ -1,8 +1,8 @@
 import requests
 import smtplib
 
-MY_EMAIL = "xxxxx"
-MY_PASSWORD = "yyyyyy"
+MY_EMAIL = "bowlersp@yahoo.com"
+MY_PASSWORD = "sgolwfrpbwtnkunc"
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -87,15 +87,11 @@ print(three_articles)
 
 #TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
 
-formatted_articles = []
+email_body = ""
 for article in three_articles:
     article['description'] = article['description'].replace('“', '"').replace('“', '"') \
         .replace('”', '"').replace('…', '...')
-    formatted_articles.append(f"Headline: {article['title']}. \nBrief: {article['description']}")
-print(formatted_articles)
-email_body = formatted_articles[0] + "\n\n"
-email_body += formatted_articles[1] + "\n\n"
-email_body += formatted_articles[2]
+    email_body += f"Headline: {article['title']}\nBrief: {article['description']}" + "\n\n"
 email_body = email_body.replace(u'\xa0', u' ')
 
 #TODO 9. - Send each article as a separate message via Twilio.
@@ -107,7 +103,7 @@ if difference > 0:
         connection.sendmail(
             from_addr=MY_EMAIL,
             to_addrs=MY_EMAIL,
-            msg=f"Subject: Tesla Stock is Up {percentage_difference}! Sell it!\n\n {formatted_articles}"
+            msg=f"Subject: Tesla Stock is Up {percentage_difference}! Sell it!\n\n {email_body}"
         )
 else:
     with smtplib.SMTP("smtp.mail.yahoo.com") as connection:
@@ -116,7 +112,7 @@ else:
         connection.sendmail(
             from_addr=MY_EMAIL,
             to_addrs=MY_EMAIL,
-            msg=f"Subject: Tesla Stock is Fucking Down {percentage_difference}! Buy it!!!\n\n {formatted_articles}"
+            msg=f"Subject: Tesla Stock is Down {percentage_difference}! Buy it!!!\n\n {email_body}"
         )
 
 #Optional TODO: Format the message like this: 
