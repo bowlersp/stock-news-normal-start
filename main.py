@@ -1,8 +1,8 @@
 import requests
 import smtplib
 
-MY_EMAIL = "bowlersp@yahoo.com"
-MY_PASSWORD = "sgolwfrpbwtnkunc"
+MY_EMAIL = "xxxxxx"
+MY_PASSWORD = "yyyyyy"
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
